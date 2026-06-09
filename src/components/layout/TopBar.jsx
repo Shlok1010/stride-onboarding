@@ -10,7 +10,7 @@ export default function TopBar() {
   const location = useLocation();
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showHireModal, setShowHireModal] = useState(false);
-  const apiKey = import.meta.env.VITE_AI_API_KEY;
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
   const currentRole =
     location.pathname.startsWith('/hire') ? 'New Hire View' :
@@ -64,7 +64,7 @@ export default function TopBar() {
 
       {!apiKey && (
         <div className="bg-amber-50 border-b border-amber-200 px-6 py-2 text-sm text-amber-800 flex-shrink-0">
-          ⚠️ AI features require a Gemini API key. Add <code className="bg-amber-100 px-1 rounded text-xs">VITE_AI_API_KEY</code> to .env.local
+          ⚠️ AI features require a Groq API key. Add <code className="bg-amber-100 px-1 rounded text-xs">VITE_GROQ_API_KEY</code> to .env.local
         </div>
       )}
 

@@ -1,3 +1,5 @@
+const MODEL = 'llama-3.3-70b-versatile';
+
 export async function streamAI({
   systemPrompt = '',
   userMessage = '',
@@ -5,46 +7,50 @@ export async function streamAI({
   onToken,
   onDone,
 }) {
-  const apiKey = import.meta.env.VITE_AI_API_KEY;
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
   if (!apiKey) {
-    onToken?.('⚠️ AI features require a Gemini API key. Add VITE_AI_API_KEY to .env.local');
+    onToken?.('⚠️ AI features require a Groq API key. Add VITE_GROQ_API_KEY to .env.local');
     onDone?.();
     return;
   }
 
-  let contents;
+  // Build messages array (OpenAI-compatible format)
+  const messages = [];
+
+  if (systemPrompt) {
+    messages.push({ role: 'system', content: systemPrompt });
+  }
+
   if (conversationHistory && conversationHistory.length > 0) {
-    contents = conversationHistory.map((m) => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }],
-    }));
-  } else {
-    contents = [{ role: 'user', parts: [{ text: userMessage }] }];
+    for (const m of conversationHistory) {
+      messages.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content });
+    }
+  } else if (userMessage) {
+    messages.push({ role: 'user', content: userMessage });
   }
 
   const body = {
-    contents,
-    generationConfig: { maxOutputTokens: 1024, temperature: 0.7 },
+    model: MODEL,
+    messages,
+    stream: true,
+    max_tokens: 1024,
+    temperature: 0.7,
   };
 
-  if (systemPrompt) {
-    body.system_instruction = { parts: [{ text: systemPrompt }] };
-  }
-
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      }
-    );
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+    });
 
     if (!response.ok) {
       const errText = await response.text().catch(() => '');
-      onToken?.(`⚠️ AI unavailable (${response.status}). Check your API key.`);
+      onToken?.(`⚠️ Groq API error (${response.status}). Check your API key.`);
       onDone?.();
       return;
     }
@@ -61,10 +67,10 @@ export async function streamAI({
         const raw = line.slice(6).trim();
         if (!raw || raw === '[DONE]') continue;
         try {
-          const token = JSON.parse(raw)?.candidates?.[0]?.content?.parts?.[0]?.text;
+          const token = JSON.parse(raw)?.choices?.[0]?.delta?.content;
           if (token) onToken?.(token);
         } catch {
-          // ignore parse errors on incomplete SSE frames
+          // ignore incomplete SSE frames
         }
       }
     }
