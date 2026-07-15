@@ -1,9 +1,9 @@
 const sourceColors = {
   'Federal Law':       'bg-blue-50 text-blue-700 border border-blue-200',
   'Arizona State Law': 'bg-orange-50 text-orange-700 border border-orange-200',
-  'Company Policy':    'bg-purple-50 text-purple-700 border border-purple-200',
-  'Benefits':          'bg-green-50 text-green-700 border border-green-200',
-  'Payroll':           'bg-amber-50 text-amber-700 border border-amber-200',
+  'Company Policy':    'bg-violet-50 text-violet-700 border border-violet-200',
+  'Benefits':          'bg-brand-50 text-brand-700 border border-brand-200',
+  'Payroll':           'bg-pink-50 text-pink-700 border border-pink-200',
   'Onboarding':        'bg-teal-50 text-teal-700 border border-teal-200',
 };
 

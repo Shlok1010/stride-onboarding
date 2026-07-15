@@ -1,9 +1,9 @@
 const phaseColors = {
-  preboarding: 'bg-purple-50 text-purple-700 border border-purple-200',
+  preboarding: 'bg-gray-50 text-gray-600 border border-gray-200',
   day1:        'bg-blue-50 text-blue-700 border border-blue-200',
-  first30:     'bg-teal-50 text-teal-700 border border-teal-200',
+  first30:     'bg-brand-50 text-brand-700 border border-brand-200',
   days31to60:  'bg-amber-50 text-amber-700 border border-amber-200',
-  days61to90:  'bg-green-50 text-green-700 border border-green-200',
+  days61to90:  'bg-brand-100 text-brand-800 border border-brand-200',
   complete:    'bg-gray-50 text-gray-600 border border-gray-200',
 };
 
@@ -20,7 +20,7 @@ const categoryColors = {
   compliance: 'bg-red-50 text-red-700 border border-red-200',
   it:         'bg-blue-50 text-blue-700 border border-blue-200',
   culture:    'bg-pink-50 text-pink-700 border border-pink-200',
-  training:   'bg-indigo-50 text-indigo-700 border border-indigo-200',
+  training:   'bg-violet-50 text-violet-700 border border-violet-200',
   admin:      'bg-gray-50 text-gray-600 border border-gray-200',
   social:     'bg-teal-50 text-teal-700 border border-teal-200',
 };

@@ -87,14 +87,14 @@ export default function HRCompassPage({ sharedMessages, setSharedMessages }) {
   return (
     <div className="flex h-full">
       {/* Sidebar */}
-      <div className="w-56 flex-shrink-0 border-r border-gray-100 bg-white p-4">
+      <div className="w-56 flex-shrink-0 border-r border-gray-200/70 bg-white p-4">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-3">Topics</p>
         <div className="space-y-1">
           {CATEGORIES.map(cat => (
             <button
               key={cat.label}
               onClick={() => sendMessage(cat.starter)}
-              className="w-full text-left text-xs text-gray-600 hover:text-brand-navy hover:bg-compass-light px-3 py-2 rounded-lg transition-colors leading-snug"
+              className="w-full text-left text-xs text-gray-600 hover:text-gray-900 hover:bg-brand-50 px-3 py-2 rounded-lg transition-colors leading-snug"
             >
               {cat.label}
             </button>
@@ -105,14 +105,14 @@ export default function HRCompassPage({ sharedMessages, setSharedMessages }) {
       {/* Chat */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-100 bg-compass-light">
+        <div className="px-6 py-5 bg-gradient-to-r from-brand-700 via-brand-600 to-teal-500">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
               <Compass className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-brand-navy">HR Compass</h1>
-              <p className="text-xs text-gray-400">Your AI HR assistant — Arizona & Federal law · Acme Manufacturing Co.</p>
+              <h1 className="text-lg font-semibold text-white">HR Compass</h1>
+              <p className="text-xs text-white/70">Your AI HR assistant — Arizona & Federal law · Acme Manufacturing Co.</p>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function HRCompassPage({ sharedMessages, setSharedMessages }) {
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
-                    className="text-sm bg-compass-light text-indigo-700 border border-indigo-100 hover:border-indigo-300 hover:bg-indigo-50 px-4 py-2 rounded-full transition-colors"
+                    className="text-sm bg-brand-50 text-brand-700 border border-brand-100 hover:border-brand-300 hover:bg-brand-100/60 px-4 py-2 rounded-full transition-colors"
                   >
                     {q}
                   </button>
@@ -144,7 +144,7 @@ export default function HRCompassPage({ sharedMessages, setSharedMessages }) {
         </div>
 
         {/* Input */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-white">
+        <div className="px-6 py-4 border-t border-gray-200/70 bg-white">
           <div className="flex gap-3 max-w-3xl">
             <input
               ref={inputRef}
@@ -152,13 +152,13 @@ export default function HRCompassPage({ sharedMessages, setSharedMessages }) {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
               placeholder="Ask about benefits, PTO, Arizona employment law..."
-              className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all"
               disabled={isStreaming}
             />
             <button
               onClick={() => sendMessage()}
               disabled={!input.trim() || isStreaming}
-              className="w-11 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 flex items-center justify-center transition-colors flex-shrink-0"
+              className="w-11 h-11 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 flex items-center justify-center transition-colors flex-shrink-0"
             >
               <Send className="w-4 h-4 text-white" />
             </button>
@@ -175,7 +175,7 @@ function MessageBubble({ msg }) {
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-xl bg-indigo-600 text-white text-sm px-5 py-3 rounded-2xl rounded-tr-sm leading-relaxed">
+        <div className="max-w-xl bg-brand-600 text-white text-sm px-5 py-3 rounded-2xl rounded-tr-sm leading-relaxed">
           {msg.content}
         </div>
       </div>
@@ -184,13 +184,13 @@ function MessageBubble({ msg }) {
 
   return (
     <div className="flex gap-3 items-start max-w-3xl">
-      <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+      <div className="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center flex-shrink-0 mt-0.5">
         <Compass className="w-4 h-4 text-white" />
       </div>
       <div>
-        <div className="bg-white border border-gray-100 shadow-sm text-gray-700 text-sm px-5 py-4 rounded-2xl rounded-tl-sm leading-relaxed whitespace-pre-wrap">
+        <div className="bg-white border border-gray-200/70 shadow-card text-gray-700 text-sm px-5 py-4 rounded-2xl rounded-tl-sm leading-relaxed whitespace-pre-wrap">
           {msg.content}
-          {msg.streaming && <span className="inline-block w-1.5 h-4 bg-indigo-400 ml-0.5 animate-blink" />}
+          {msg.streaming && <span className="inline-block w-1.5 h-4 bg-brand-400 ml-0.5 animate-blink" />}
         </div>
         {msg.sources && msg.sources.length > 0 && <SourceTag sources={msg.sources} />}
         {!msg.streaming && msg.content && (

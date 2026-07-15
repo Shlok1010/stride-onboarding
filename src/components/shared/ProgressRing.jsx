@@ -1,4 +1,4 @@
-export default function ProgressRing({ percentage = 0, size = 64, strokeWidth = 6, color = '#1D9E75' }) {
+export default function ProgressRing({ percentage = 0, size = 64, strokeWidth = 6, color = '#059669' }) {
   const r = (size - strokeWidth * 2) / 2;
   const circumference = 2 * Math.PI * r;
   const offset = circumference * (1 - Math.min(percentage, 100) / 100);
@@ -28,7 +28,7 @@ export default function ProgressRing({ percentage = 0, size = 64, strokeWidth = 
         dominantBaseline="central"
         fontSize={size < 50 ? '10' : '13'}
         fontWeight="600"
-        fill="#2D3250"
+        fill="#111827"
       >
         {percentage}%
       </text>

@@ -86,17 +86,17 @@ export default function HRCompassDrawer({ isOpen, onClose, messages, setMessages
         className={`fixed top-0 right-0 h-full w-[420px] max-w-full bg-white shadow-lift z-50 flex flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-compass-light">
+        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-brand-700 via-brand-600 to-teal-500">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
               <Compass className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-brand-navy">HR Compass</p>
-              <p className="text-xs text-gray-400">Arizona & Federal law · Acme Policy</p>
+              <p className="text-sm font-semibold text-white">HR Compass</p>
+              <p className="text-xs text-white/70">Arizona & Federal law · Acme Policy</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-white/60 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-white/15 flex items-center justify-center text-white/80 hover:text-white transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -115,7 +115,7 @@ export default function HRCompassDrawer({ isOpen, onClose, messages, setMessages
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
-                    className="text-xs bg-compass-light text-indigo-700 border border-indigo-100 hover:border-indigo-300 hover:bg-indigo-50 px-3 py-1.5 rounded-full transition-colors"
+                    className="text-xs bg-brand-50 text-brand-700 border border-brand-100 hover:border-brand-300 hover:bg-brand-100/60 px-3 py-1.5 rounded-full transition-colors"
                   >
                     {q}
                   </button>
@@ -136,13 +136,13 @@ export default function HRCompassDrawer({ isOpen, onClose, messages, setMessages
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
               placeholder="Ask about benefits, PTO, Arizona law..."
-              className="flex-1 text-sm border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+              className="flex-1 text-sm border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all"
               disabled={isStreaming}
             />
             <button
               onClick={() => sendMessage()}
               disabled={!input.trim() || isStreaming}
-              className="w-10 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 flex items-center justify-center transition-colors flex-shrink-0"
+              className="w-10 h-10 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 flex items-center justify-center transition-colors flex-shrink-0"
             >
               <Send className="w-4 h-4 text-white" />
             </button>
@@ -159,7 +159,7 @@ function MessageBubble({ msg }) {
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] bg-indigo-600 text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm leading-relaxed">
+        <div className="max-w-[80%] bg-brand-600 text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm leading-relaxed">
           {msg.content}
         </div>
       </div>
@@ -168,13 +168,13 @@ function MessageBubble({ msg }) {
 
   return (
     <div className="flex gap-2.5 items-start">
-      <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+      <div className="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center flex-shrink-0 mt-0.5">
         <Compass className="w-3.5 h-3.5 text-white" />
       </div>
       <div className="max-w-[85%]">
         <div className="bg-gray-50 border border-gray-100 text-gray-700 text-sm px-4 py-3 rounded-2xl rounded-tl-sm leading-relaxed whitespace-pre-wrap">
           {msg.content}
-          {msg.streaming && <span className="inline-block w-1.5 h-4 bg-indigo-400 ml-0.5 animate-blink" />}
+          {msg.streaming && <span className="inline-block w-1.5 h-4 bg-brand-400 ml-0.5 animate-blink" />}
         </div>
         {msg.sources && msg.sources.length > 0 && <SourceTag sources={msg.sources} />}
         {!msg.streaming && msg.content && (

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HRCompassButton from './components/hrCompass/HRCompassButton';
 import HRCompassDrawer from './components/hrCompass/HRCompassDrawer';
+import CommandPalette from './components/shared/CommandPalette';
 import HRDashboard from './pages/HRDashboard';
 import NewHireView from './pages/NewHireView';
 import ManagerView from './pages/ManagerView';
@@ -22,6 +23,12 @@ export default function App() {
   const [compassMessages, setCompassMessages] = useState(COMPASS_INITIAL);
 
   const isCompassPage = location.pathname === '/compass';
+
+  useEffect(() => {
+    const openCompass = () => setCompassOpen(true);
+    window.addEventListener('stride:open-compass', openCompass);
+    return () => window.removeEventListener('stride:open-compass', openCompass);
+  }, []);
 
   return (
     <>
@@ -43,6 +50,8 @@ export default function App() {
           />
         </Routes>
       </Layout>
+
+      <CommandPalette />
 
       {!isCompassPage && (
         <>

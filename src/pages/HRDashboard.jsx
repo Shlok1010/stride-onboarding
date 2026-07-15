@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, TrendingUp, TrendingDown, Minus, Users, CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
+import { AlertTriangle, TrendingUp, TrendingDown, Minus, CheckCircle2, ChevronRight, Sparkles, ShieldAlert, Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { employees } from '../data/employees';
 import { pulseData } from '../data/pulseData';
+import { getFlaggedCompliance } from '../data/compliance';
 import Avatar from '../components/shared/Avatar';
 import ProgressRing from '../components/shared/ProgressRing';
 import PulseCurve from '../components/shared/PulseCurve';
@@ -36,22 +37,57 @@ function getSentimentCell(empId, week) {
 
 const HEATMAP_COLOR = (score) => {
   if (score === null) return 'bg-gray-100';
-  if (score >= 9) return 'bg-green-500';
-  if (score >= 7) return 'bg-green-300';
+  if (score >= 9) return 'bg-brand-500';
+  if (score >= 7) return 'bg-brand-300';
   if (score >= 5) return 'bg-amber-300';
   return 'bg-red-400';
 };
+
+const COMPLIANCE_STATUS_STYLES = {
+  overdue: 'bg-red-50 text-red-700 border border-red-200',
+  'due-soon': 'bg-amber-50 text-amber-700 border border-amber-200',
+};
+const COMPLIANCE_STATUS_LABELS = { overdue: 'Overdue', 'due-soon': 'Due Soon' };
+
+function buildDigestContext() {
+  const active = employees.filter(e => e.phase !== 'complete' && e.phase !== 'preboarding').length;
+  const completing = employees.filter(e => e.phase === 'days61to90').length;
+  const atRiskList = employees.filter(e => e.riskScore === 3);
+  const avgCompletion = Math.round(employees.reduce((a, e) => a + e.completionPct, 0) / employees.length);
+  const deptData = getDeptData();
+  const flagged = getFlaggedCompliance();
+
+  const latestNotes = employees
+    .map(e => {
+      const entries = pulseData.filter(p => p.employeeId === e.id).sort((a, b) => b.week - a.week);
+      return entries[0] ? `${e.name} (week ${entries[0].week}, score ${entries[0].avgScore}/10): "${entries[0].note}"` : null;
+    })
+    .filter(Boolean)
+    .join('\n');
+
+  return `Org snapshot for Acme Manufacturing Co., June 9, 2026.
+Active onboardings: ${active}. Completing this week (days 61-90 phase): ${completing}. Average completion across all active hires: ${avgCompletion}%.
+Department completion averages: ${deptData.map(d => `${d.dept} ${d.avg}%`).join(', ')}.
+At-risk hires (risk score 3): ${atRiskList.map(e => `${e.name} (${e.role}, day ${e.daysIn}, pulse ${e.currentPulse}/10, completion ${e.completionPct}%)`).join('; ') || 'none'}.
+Compliance items flagged (overdue or due soon): ${flagged.map(f => `${employees.find(e => e.id === f.employeeId)?.name} — ${f.item} (${f.status})`).join('; ') || 'none'}.
+Most recent pulse check-in notes from new hires:
+${latestNotes}`;
+}
 
 // --- Component ---
 export default function HRDashboard() {
   const navigate = useNavigate();
   const [aiPanel, setAiPanel] = useState('');
   const [aiStreaming, setAiStreaming] = useState(false);
+  const [digest, setDigest] = useState('');
+  const [digestStreaming, setDigestStreaming] = useState(false);
   const deptData = getDeptData();
   const atRisk = employees.find(e => e.riskScore === 3);
-  const active = employees.filter(e => e.phase !== 'complete' && e.phase !== 'preboarding').length;
   const completing = employees.filter(e => ['days61to90'].includes(e.phase)).length;
   const avgCompletion = Math.round(employees.reduce((a, e) => a + e.completionPct, 0) / employees.length);
+  const flaggedCompliance = getFlaggedCompliance();
+  const overdueCount = flaggedCompliance.filter(f => f.status === 'overdue').length;
+  const dueSoonCount = flaggedCompliance.filter(f => f.status === 'due-soon').length;
 
   const generateTalkingPoints = async () => {
     if (aiStreaming) return;
@@ -65,19 +101,62 @@ export default function HRDashboard() {
     });
   };
 
+  const generateDigest = async () => {
+    if (digestStreaming) return;
+    setDigest('');
+    setDigestStreaming(true);
+    await streamAI({
+      systemPrompt: 'You are an HR analytics assistant writing a weekly executive brief for the Director of HR. Write exactly 3 short paragraphs: (1) headline health read of onboarding across the org, (2) notable risks and wins, called out by name, (3) one specific recommended action for this week. Be concise, direct, and grounded only in the data given. No headers, no bullet points, no markdown formatting.',
+      userMessage: buildDigestContext(),
+      onToken: (t) => setDigest(prev => prev + t),
+      onDone: () => setDigestStreaming(false),
+    });
+  };
+
   return (
     <div className="p-6 space-y-6 max-w-[1280px]">
       <div>
-        <h1 className="text-2xl font-semibold text-brand-navy">HR Dashboard</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Acme Manufacturing Co. · June 9, 2026</p>
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">HR Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-0.5">Acme Manufacturing Co. · June 9, 2026</p>
       </div>
 
       {/* KPI Strip */}
       <div className="grid grid-cols-4 gap-4">
-        <StatCard label="Active Onboardings" value={7} subtitle="Across 6 departments" color="text-hr-dark" />
-        <StatCard label="Completing This Week" value={completing} subtitle="Days 61–90 phase" color="text-green-600" />
+        <StatCard label="Active Onboardings" value={7} subtitle="Across 6 departments" color="text-brand-700" />
+        <StatCard label="Completing This Week" value={completing} subtitle="Days 61–90 phase" color="text-brand-600" />
         <StatCard label="At-Risk Hires" value={1} subtitle="Derek Thompson · Day 6" color="text-red-500" />
         <StatCard label="Avg. Completion" value={`${avgCompletion}%`} subtitle="Across all active hires" color="text-amber-600" />
+      </div>
+
+      {/* AI Weekly Digest */}
+      <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card overflow-hidden">
+        <div className="bg-gradient-to-r from-brand-700 via-brand-600 to-teal-500 px-5 py-4 flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">AI Weekly Digest</p>
+              <p className="text-xs text-white/70">Org-wide onboarding health, generated from live data</p>
+            </div>
+          </div>
+          <button
+            onClick={generateDigest}
+            disabled={digestStreaming}
+            className="px-3 py-1.5 text-xs font-semibold bg-white text-brand-700 rounded-lg hover:bg-white/90 disabled:opacity-60 transition-colors flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3 h-3" />
+            {digest || digestStreaming ? 'Regenerate' : 'Generate Weekly Digest'}
+          </button>
+        </div>
+        {(digest || digestStreaming) && (
+          <div className="p-5">
+            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed space-y-3">
+              {digest}
+              {digestStreaming && <span className="inline-block w-1.5 h-4 bg-brand-400 ml-0.5 animate-blink" />}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* At-Risk Alert */}
@@ -121,7 +200,7 @@ export default function HRDashboard() {
                   <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-2">AI Talking Points for Ray Morales</p>
                   <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
                     {aiPanel}
-                    {aiStreaming && <span className="inline-block w-1.5 h-4 bg-indigo-400 ml-0.5 animate-blink" />}
+                    {aiStreaming && <span className="inline-block w-1.5 h-4 bg-brand-400 ml-0.5 animate-blink" />}
                   </div>
                 </div>
               )}
@@ -129,6 +208,66 @@ export default function HRDashboard() {
           </div>
         </div>
       )}
+
+      {/* Compliance Radar */}
+      <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+              <ShieldAlert className="w-4 h-4 text-red-500" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Compliance Radar</h2>
+              <p className="text-xs text-gray-400">I-9, E-Verify & tax withholding deadlines across active hires</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {overdueCount > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> {overdueCount} overdue
+              </span>
+            )}
+            {dueSoonCount > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                <Clock className="w-3 h-3" /> {dueSoonCount} due soon
+              </span>
+            )}
+            {flaggedCompliance.length === 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
+                <CheckCircle2 className="w-3 h-3" /> All current
+              </span>
+            )}
+          </div>
+        </div>
+
+        {flaggedCompliance.length > 0 ? (
+          <div className="space-y-2">
+            {flaggedCompliance.map((c) => {
+              const emp = employees.find(e => e.id === c.employeeId);
+              return (
+                <div key={c.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50/60 transition-colors">
+                  <Avatar initials={emp.initials} color={emp.avatarColor} size="sm" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{emp.name} <span className="text-gray-400 font-normal">— {c.item}</span></p>
+                    <p className="text-xs text-gray-400">Due {c.dueDate}{c.note ? ` · ${c.note}` : ''}</p>
+                  </div>
+                  <span className={`flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${COMPLIANCE_STATUS_STYLES[c.status]}`}>
+                    {COMPLIANCE_STATUS_LABELS[c.status]}
+                  </span>
+                  <button
+                    onClick={() => window.dispatchEvent(new Event('stride:open-compass'))}
+                    className="flex-shrink-0 text-xs font-medium text-brand-600 hover:text-brand-700 transition-colors"
+                  >
+                    Ask HR Compass →
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400">No outstanding compliance deadlines across active hires.</p>
+        )}
+      </div>
 
       {/* Hire Cards */}
       <div>
@@ -141,7 +280,7 @@ export default function HRDashboard() {
       </div>
 
       {/* Sentiment Heatmap */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
         <h2 className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Pulse Score Heatmap</h2>
         <div className="overflow-x-auto">
           <table className="text-xs w-full">
@@ -162,7 +301,7 @@ export default function HRDashboard() {
                     return (
                       <td key={w} className="px-2 py-1 text-center">
                         <div
-                          className={`w-8 h-7 rounded mx-auto flex items-center justify-center text-white text-[10px] font-semibold ${HEATMAP_COLOR(score)}`}
+                          className={`w-8 h-7 rounded-[7px] mx-auto flex items-center justify-center text-white text-[10px] font-semibold transition-transform hover:scale-125 hover:ring-2 hover:ring-white hover:shadow-pop ${HEATMAP_COLOR(score)}`}
                           title={score ? `Week ${w}: ${score}` : 'No data'}
                         >
                           {score ? score.toFixed(1) : '—'}
@@ -175,7 +314,7 @@ export default function HRDashboard() {
             </tbody>
           </table>
           <div className="flex items-center gap-3 mt-3">
-            {[['At Risk','bg-red-400'],['Needs Attention','bg-amber-300'],['Good','bg-green-300'],['Thriving','bg-green-500']].map(([l,c]) => (
+            {[['At Risk','bg-red-400'],['Needs Attention','bg-amber-300'],['Good','bg-brand-300'],['Thriving','bg-brand-500']].map(([l,c]) => (
               <div key={l} className="flex items-center gap-1.5">
                 <div className={`w-3 h-3 rounded ${c}`} />
                 <span className="text-xs text-gray-400">{l}</span>
@@ -190,17 +329,17 @@ export default function HRDashboard() {
       </div>
 
       {/* Dept Chart */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
         <h2 className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Completion by Department</h2>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={deptData} layout="vertical" margin={{ left: 16, right: 24, top: 4, bottom: 4 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F3F4F6" />
-            <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+            <CartesianGrid stroke="#eef2f6" horizontal={false} />
+            <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
             <YAxis type="category" dataKey="dept" tick={{ fontSize: 12, fill: '#374151' }} axisLine={false} tickLine={false} width={110} />
-            <Tooltip formatter={(v) => [`${v}%`, 'Avg Completion']} contentStyle={{ borderRadius: 12, border: '1px solid #E5E7EB', fontSize: 12 }} />
-            <Bar dataKey="avg" radius={[0, 6, 6, 0]} maxBarSize={22}>
+            <Tooltip formatter={(v) => [`${v}%`, 'Avg Completion']} contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12, boxShadow: '0 8px 24px -6px rgb(16 24 40 / 0.12)' }} cursor={{ fill: 'rgb(16 24 40 / 0.03)' }} />
+            <Bar dataKey="avg" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
               {deptData.map((_, i) => (
-                <Cell key={i} fill={i === 0 ? '#1D9E75' : i === deptData.length - 1 ? '#F87171' : '#378ADD'} />
+                <Cell key={i} fill={i === 0 ? '#059669' : i === deptData.length - 1 ? '#F87171' : '#2563EB'} />
               ))}
             </Bar>
           </BarChart>
@@ -212,16 +351,16 @@ export default function HRDashboard() {
 
 function StatCard({ label, value, subtitle, color }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+    <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
       <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-      <p className={`text-3xl font-semibold ${color}`}>{value}</p>
+      <p className={`text-3xl font-semibold tabular-nums ${color}`}>{value}</p>
       <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
     </div>
   );
 }
 
 function TrendIcon({ trend }) {
-  if (trend === 'up') return <TrendingUp className="w-3.5 h-3.5 text-green-500" />;
+  if (trend === 'up') return <TrendingUp className="w-3.5 h-3.5 text-brand-500" />;
   if (trend === 'down') return <TrendingDown className="w-3.5 h-3.5 text-red-400" />;
   return <Minus className="w-3.5 h-3.5 text-gray-400" />;
 }
@@ -231,12 +370,12 @@ function HireCard({ employee: e, pulseHistory, onView }) {
   const isComplete = e.phase === 'complete';
 
   return (
-    <div className={`bg-white rounded-2xl border shadow-sm p-5 transition-all hover:shadow-md ${isAtRisk ? 'border-l-4 border-l-red-400 border-gray-100' : 'border-gray-100'} ${isComplete ? 'opacity-70' : ''}`}>
+    <div className={`bg-white rounded-2xl border shadow-card p-5 transition-all hover:shadow-cardHover hover:-translate-y-0.5 ${isAtRisk ? 'border-l-4 border-l-red-400 border-gray-200/70' : 'border-gray-200/70'} ${isComplete ? 'opacity-70' : ''}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <Avatar initials={e.initials} color={e.avatarColor} />
           <div>
-            <p className="text-sm font-semibold text-brand-navy">{e.name}</p>
+            <p className="text-sm font-semibold text-gray-900">{e.name}</p>
             <p className="text-xs text-gray-400">{e.role} · Day {e.daysIn}</p>
           </div>
         </div>
@@ -248,21 +387,21 @@ function HireCard({ employee: e, pulseHistory, onView }) {
         <div className="flex-1 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-500">Pulse</span>
-            <span className="flex items-center gap-1 font-medium text-brand-navy">
+            <span className="flex items-center gap-1 font-medium text-gray-900">
               {e.currentPulse !== null ? `${e.currentPulse}/10` : '—'}
               <TrendIcon trend={e.pulseTrend} />
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-500">Connections</span>
-            <span className="font-medium text-brand-navy">{e.connectionsCount}</span>
+            <span className="font-medium text-gray-900">{e.connectionsCount}</span>
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-500">Velocity</span>
-            <span className={`font-medium ${e.velocityScore >= 100 ? 'text-green-600' : 'text-amber-600'}`}>{e.velocityScore}% vs avg</span>
+            <span className={`font-medium ${e.velocityScore >= 100 ? 'text-brand-600' : 'text-amber-600'}`}>{e.velocityScore}% vs avg</span>
           </div>
           {pulseHistory.length > 1 && (
-            <PulseCurve data={pulseHistory} width={100} height={20} color={e.riskScore === 3 ? '#F87171' : '#1D9E75'} />
+            <PulseCurve data={pulseHistory} width={100} height={20} color={e.riskScore === 3 ? '#F87171' : '#059669'} />
           )}
         </div>
       </div>

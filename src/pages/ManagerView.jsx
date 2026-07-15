@@ -52,9 +52,9 @@ export default function ManagerView() {
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-manager-light to-white rounded-2xl p-6 border border-manager-mid/20">
+      <div className="bg-gradient-to-r from-brand-50 to-white rounded-2xl p-6 border border-brand-200/70">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">Manager View</p>
-        <h1 className="text-2xl font-semibold text-brand-navy">{MANAGER}</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">{MANAGER}</h1>
         <p className="text-sm text-gray-500 mt-1">Operations Director · {managerReports.length} active reports in onboarding</p>
       </div>
 
@@ -88,14 +88,14 @@ export default function ManagerView() {
             const avgPulse = pulseHistory.length ? (pulseHistory.reduce((a, b) => a + b, 0) / pulseHistory.length).toFixed(1) : '—';
 
             return (
-              <div key={emp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div key={emp.id} className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
                 <div className="flex items-start gap-4">
                   {/* Info */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <Avatar initials={emp.initials} color={emp.avatarColor} />
                       <div>
-                        <p className="text-sm font-semibold text-brand-navy">{emp.name}</p>
+                        <p className="text-sm font-semibold text-gray-900">{emp.name}</p>
                         <p className="text-xs text-gray-400">{emp.role} · Day {emp.daysIn}</p>
                       </div>
                       <PhaseBadge phase={emp.phase} />
@@ -105,13 +105,13 @@ export default function ManagerView() {
                       <Metric label="Completion" value={`${emp.completionPct}%`} />
                       <Metric label="Pulse Avg" value={emp.currentPulse ? `${emp.currentPulse}/10` : '—'} />
                       <Metric label="Connections" value={emp.connectionsCount} />
-                      <Metric label="Velocity" value={`${emp.velocityScore}%`} color={emp.velocityScore >= 100 ? 'text-green-600' : 'text-amber-600'} />
+                      <Metric label="Velocity" value={`${emp.velocityScore}%`} color={emp.velocityScore >= 100 ? 'text-brand-600' : 'text-amber-600'} />
                     </div>
 
                     {pulseHistory.length > 1 && (
                       <div className="flex items-center gap-2 mb-4">
                         <span className="text-xs text-gray-400">Pulse trend:</span>
-                        <PulseCurve data={pulseHistory} width={120} height={24} color={emp.riskScore === 3 ? '#F87171' : '#1D9E75'} />
+                        <PulseCurve data={pulseHistory} width={120} height={24} color={emp.riskScore === 3 ? '#F87171' : '#059669'} />
                       </div>
                     )}
 
@@ -119,7 +119,7 @@ export default function ManagerView() {
                       <button
                         onClick={() => generateTalkingPoints(emp)}
                         disabled={streamingFor === emp.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-manager-light hover:bg-manager-mid hover:text-white text-manager-dark text-xs font-medium rounded-lg transition-colors border border-manager-mid/20 disabled:opacity-60"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 hover:bg-brand-600 hover:text-white text-brand-700 text-xs font-medium rounded-lg transition-colors border border-brand-600/20 disabled:opacity-60"
                       >
                         <Sparkles className="w-3 h-3" /> Generate Talking Points
                       </button>
@@ -132,18 +132,18 @@ export default function ManagerView() {
                     </div>
 
                     {aiPanels[emp.id] !== undefined && (
-                      <div className="mt-4 bg-manager-light border border-manager-mid/20 rounded-xl p-4">
+                      <div className="mt-4 bg-brand-50 border border-brand-600/20 rounded-xl p-4">
                         <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-2">AI Check-In Talking Points</p>
                         <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
                           {aiPanels[emp.id]}
-                          {streamingFor === emp.id && <span className="inline-block w-1.5 h-4 bg-indigo-400 ml-0.5 animate-blink" />}
+                          {streamingFor === emp.id && <span className="inline-block w-1.5 h-4 bg-brand-400 ml-0.5 animate-blink" />}
                         </div>
                       </div>
                     )}
                   </div>
 
                   {/* Progress Ring */}
-                  <ProgressRing percentage={emp.completionPct} size={64} strokeWidth={6} color={emp.riskScore === 3 ? '#F87171' : '#7077A1'} />
+                  <ProgressRing percentage={emp.completionPct} size={64} strokeWidth={6} color={emp.riskScore === 3 ? '#F87171' : '#059669'} />
                 </div>
 
                 {/* Connection Recommendations */}
@@ -155,14 +155,14 @@ export default function ManagerView() {
                         <div className="flex items-center gap-2 mb-1">
                           <Avatar initials={rec.initials} color={rec.color} size="sm" />
                           <div>
-                            <p className="text-xs font-medium text-brand-navy">{rec.person}</p>
+                            <p className="text-xs font-medium text-gray-900">{rec.person}</p>
                             <p className="text-[10px] text-gray-400">{rec.role}</p>
                           </div>
                         </div>
                         <p className="text-[10px] text-gray-500 italic mb-2">"{rec.reason}"</p>
                         <button
                           onClick={() => setToast({ message: `Email drafted — connecting ${emp.name.split(' ')[0]} and ${rec.person}!`, type: 'success' })}
-                          className="w-full text-[10px] bg-white border border-gray-200 hover:bg-manager-light text-gray-600 py-1 rounded-lg transition-colors flex items-center justify-center gap-1"
+                          className="w-full text-[10px] bg-white border border-gray-200 hover:bg-brand-50 text-gray-600 py-1 rounded-lg transition-colors flex items-center justify-center gap-1"
                         >
                           <Mail className="w-2.5 h-2.5" /> Schedule Intro
                         </button>
@@ -177,12 +177,12 @@ export default function ManagerView() {
       </div>
 
       {/* Manager Tasks */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Your Onboarding Tasks</p>
         <div className="space-y-2">
           {managerTasks.map(t => (
-            <div key={t.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors">
-              <div className="w-2 h-2 rounded-full bg-manager-mid flex-shrink-0" />
+            <div key={t.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200/70 hover:bg-gray-50 transition-colors">
+              <div className="w-2 h-2 rounded-full bg-brand-600 flex-shrink-0" />
               <p className="text-sm text-gray-700 flex-1">{t.title}</p>
               <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded capitalize">{t.category}</span>
             </div>
@@ -193,7 +193,7 @@ export default function ManagerView() {
   );
 }
 
-function Metric({ label, value, color = 'text-brand-navy' }) {
+function Metric({ label, value, color = 'text-gray-900' }) {
   return (
     <div className="bg-gray-50 rounded-xl p-3 text-center">
       <p className={`text-lg font-semibold ${color}`}>{value}</p>

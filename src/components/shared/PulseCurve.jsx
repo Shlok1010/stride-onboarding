@@ -1,4 +1,4 @@
-export default function PulseCurve({ data = [], width = 80, height = 28, color = '#1D9E75' }) {
+export default function PulseCurve({ data = [], width = 80, height = 28, color = '#059669' }) {
   if (!data || data.length < 2) {
     return (
       <svg width={width} height={height}>

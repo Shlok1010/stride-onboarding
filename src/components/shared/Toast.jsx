@@ -12,7 +12,7 @@ export default function Toast({ message, type = 'success', onDismiss }) {
     return () => clearTimeout(t);
   }, [onDismiss]);
 
-  const bg = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+  const bg = type === 'success' ? 'bg-brand-600' : 'bg-red-600';
 
   return (
     <div

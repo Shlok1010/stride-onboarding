@@ -6,11 +6,11 @@ import { streamAI } from '../lib/ai';
 import Toast from '../components/shared/Toast';
 
 const PHASE_COLORS = {
-  preboarding: 'bg-purple-100 text-purple-700',
+  preboarding: 'bg-gray-100 text-gray-700',
   day1: 'bg-blue-100 text-blue-700',
-  first30: 'bg-teal-100 text-teal-700',
+  first30: 'bg-brand-100 text-brand-700',
   days31to60: 'bg-amber-100 text-amber-700',
-  days61to90: 'bg-green-100 text-green-700',
+  days61to90: 'bg-brand-200 text-brand-800',
 };
 
 const PHASE_LABELS = { preboarding: 'Pre-board', day1: 'Day 1', first30: 'First 30', days31to60: '31–60', days61to90: '61–90' };
@@ -55,12 +55,12 @@ export default function Templates() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-brand-navy">Onboarding Templates</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Onboarding Templates</h1>
           <p className="text-sm text-gray-400 mt-0.5">Role-based templates for Acme Manufacturing</p>
         </div>
         <button
           onClick={() => setShowGenerator(!showGenerator)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors"
         >
           <Sparkles className="w-4 h-4" /> Generate Template with AI
         </button>
@@ -68,9 +68,9 @@ export default function Templates() {
 
       {/* AI Generator */}
       {showGenerator && (
-        <div className="bg-compass-light border border-indigo-100 rounded-2xl p-5">
+        <div className="bg-brand-50 border border-brand-100 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-semibold text-brand-navy">AI Template Generator</p>
+            <p className="text-sm font-semibold text-gray-900">AI Template Generator</p>
             <button onClick={() => setShowGenerator(false)} className="text-gray-400 hover:text-gray-600">
               <X className="w-4 h-4" />
             </button>
@@ -82,7 +82,7 @@ export default function Templates() {
                 value={genForm.role}
                 onChange={e => setGenForm(prev => ({ ...prev, role: e.target.value }))}
                 placeholder="e.g. Procurement Specialist"
-                className="w-full border border-indigo-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                className="w-full border border-brand-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
               />
             </div>
             <div>
@@ -90,7 +90,7 @@ export default function Templates() {
               <select
                 value={genForm.department}
                 onChange={e => setGenForm(prev => ({ ...prev, department: e.target.value }))}
-                className="w-full border border-indigo-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400"
+                className="w-full border border-brand-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:border-brand-400"
               >
                 {['Operations','Logistics','Finance','Human Resources','Facilities','Quality','Procurement','Information Technology','Sales'].map(d => (
                   <option key={d}>{d}</option>
@@ -102,7 +102,7 @@ export default function Templates() {
               <select
                 value={genForm.seniority}
                 onChange={e => setGenForm(prev => ({ ...prev, seniority: e.target.value }))}
-                className="w-full border border-indigo-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400"
+                className="w-full border border-brand-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:border-brand-400"
               >
                 {['Junior','Mid','Senior'].map(s => <option key={s}>{s}</option>)}
               </select>
@@ -111,13 +111,13 @@ export default function Templates() {
           <button
             onClick={generateTemplate}
             disabled={genStreaming || !genForm.role.trim()}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-60 flex items-center gap-2"
+            className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-60 flex items-center gap-2"
           >
             {genStreaming ? <><span className="inline-block w-1.5 h-4 bg-white animate-blink" /> Generating...</> : <><Sparkles className="w-4 h-4" /> Generate</>}
           </button>
 
           {genStreaming && !genResult && (
-            <div className="mt-4 bg-white rounded-xl p-4 border border-indigo-100">
+            <div className="mt-4 bg-white rounded-xl p-4 border border-brand-100">
               <p className="text-xs text-gray-400 mb-2">Generating tasks...</p>
               <div className="font-mono text-xs text-gray-500 whitespace-pre-wrap max-h-32 overflow-hidden">{genRaw.slice(0, 300)}{genRaw.length > 300 ? '...' : ''}</div>
             </div>
@@ -126,10 +126,10 @@ export default function Templates() {
           {genResult && genResult.length > 0 && (
             <div className="mt-4">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium text-brand-navy">{genResult.length} tasks generated for <strong>{genForm.role}</strong></p>
+                <p className="text-sm font-medium text-gray-900">{genResult.length} tasks generated for <strong>{genForm.role}</strong></p>
                 <button
                   onClick={() => setToast({ message: `Template for ${genForm.role} saved!`, type: 'success' })}
-                  className="px-3 py-1.5 bg-hire-mid text-white text-xs font-medium rounded-lg hover:bg-hire-dark transition-colors"
+                  className="px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded-lg hover:bg-brand-700 transition-colors"
                 >
                   Save Template
                 </button>
@@ -142,7 +142,7 @@ export default function Templates() {
                     <p className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full mb-2 ${PHASE_COLORS[phase]}`}>{PHASE_LABELS[phase]}</p>
                     <div className="space-y-1.5">
                       {phaseTasks.map((t, i) => (
-                        <div key={i} className="flex items-center gap-3 bg-white rounded-lg p-2.5 border border-gray-100">
+                        <div key={i} className="flex items-center gap-3 bg-white rounded-lg p-2.5 border border-gray-200/70">
                           {t.isMandatory ? <CheckCircle2 className="w-3.5 h-3.5 text-red-400 flex-shrink-0" /> : <div className="w-3.5 h-3.5 rounded-full border border-gray-300 flex-shrink-0" />}
                           <span className="text-xs text-gray-700 flex-1">{t.title}</span>
                           <CategoryBadge category={t.category} />
@@ -174,14 +174,14 @@ export default function Templates() {
 
 function TemplateCard({ template: t, onSelect, onUse }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-all">
+    <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card hover:shadow-cardHover hover:-translate-y-0.5 p-5 transition-all">
       <div className="flex items-start justify-between mb-3">
-        <div className="w-10 h-10 rounded-xl bg-hr-light flex items-center justify-center">
-          <FileText className="w-5 h-5 text-hr-dark" />
+        <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center">
+          <FileText className="w-5 h-5 text-brand-700" />
         </div>
         <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded">{t.department}</span>
       </div>
-      <h3 className="font-semibold text-brand-navy text-sm mb-1">{t.role}</h3>
+      <h3 className="font-semibold text-gray-900 text-sm mb-1">{t.role}</h3>
       <p className="text-xs text-gray-400 mb-3">{t.totalTasks} tasks · ~{t.estimatedDays} days</p>
 
       <div className="flex gap-1.5 mb-4 flex-wrap">
@@ -196,7 +196,7 @@ function TemplateCard({ template: t, onSelect, onUse }) {
         <button onClick={onSelect} className="flex-1 text-xs font-medium bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 rounded-lg transition-colors flex items-center justify-center gap-1">
           View <ChevronRight className="w-3 h-3" />
         </button>
-        <button onClick={onUse} className="flex-1 text-xs font-medium bg-hr-light hover:bg-hr-mid hover:text-white text-hr-dark py-2 rounded-lg transition-colors">
+        <button onClick={onUse} className="flex-1 text-xs font-medium bg-brand-50 hover:bg-brand-600 hover:text-white text-brand-700 py-2 rounded-lg transition-colors">
           Use Template
         </button>
       </div>
@@ -213,14 +213,14 @@ function TemplateDetail({ template: t, onBack, onUse }) {
           ← Back to Templates
         </button>
       </div>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-6">
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h2 className="text-xl font-semibold text-brand-navy">{t.role}</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t.role}</h2>
             <p className="text-sm text-gray-400">{t.department} · {t.totalTasks} tasks · ~{t.estimatedDays} days to completion</p>
             <p className="text-sm text-gray-500 mt-2 max-w-xl">{t.description}</p>
           </div>
-          <button onClick={onUse} className="px-4 py-2 bg-hr-mid hover:bg-hr-dark text-white text-sm font-medium rounded-xl transition-colors">
+          <button onClick={onUse} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors">
             Use This Template
           </button>
         </div>
@@ -236,7 +236,7 @@ function TemplateDetail({ template: t, onBack, onUse }) {
               </div>
               <div className="space-y-2">
                 {phaseTasks.map((task, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors">
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-200/70 hover:bg-gray-50 transition-colors">
                     {task.isMandatory
                       ? <CheckCircle2 className="w-4 h-4 text-red-400 flex-shrink-0" />
                       : <div className="w-4 h-4 rounded-full border-2 border-gray-200 flex-shrink-0" />

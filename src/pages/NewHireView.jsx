@@ -18,7 +18,7 @@ const PHASE_LABELS = { preboarding: 'Pre-board', day1: 'Day 1', first30: 'First 
 const PHASE_ICONS = { preboarding: '📋', day1: '🚀', first30: '🌱', days31to60: '📈', days61to90: '🏆', complete: '✅' };
 
 function Confetti() {
-  const colors = ['#F6B17A', '#1D9E75', '#6C5CE7', '#378ADD', '#E2C4F0'];
+  const colors = ['#059669', '#34D399', '#2563EB', '#EA580C', '#0D9488'];
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
       {Array.from({ length: 16 }).map((_, i) => (
@@ -105,11 +105,11 @@ export default function NewHireView() {
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
 
       {/* Welcome Header */}
-      <div className="bg-gradient-to-br from-brand-cream via-amber-50 to-hire-light px-8 py-8">
+      <div className="bg-gradient-to-br from-brand-50 via-teal-50 to-white px-8 py-8">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">Welcome back</p>
-            <h1 className="text-3xl font-bold text-brand-navy mb-2">Good morning, {emp.name.split(' ')[0]}. 👋</h1>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">Good morning, {emp.name.split(' ')[0]}. 👋</h1>
             <p className="text-gray-500 mb-4">
               {emp.daysIn === 0 ? 'Your first day starts today!' : `Day ${emp.daysIn} of your onboarding journey`}
               {emp.phase !== 'complete' && ` · You're ${emp.completionPct}% through`}
@@ -117,11 +117,11 @@ export default function NewHireView() {
             <div className="flex items-center gap-3">
               <div className="bg-white rounded-full h-2 w-64 overflow-hidden">
                 <div
-                  className="h-full bg-hire-mid rounded-full transition-all duration-700"
+                  className="h-full bg-brand-600 rounded-full transition-all duration-700"
                   style={{ width: `${emp.completionPct}%` }}
                 />
               </div>
-              <span className="text-sm font-semibold text-hire-dark">{emp.completionPct}%</span>
+              <span className="text-sm font-semibold text-brand-700">{emp.completionPct}%</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -137,7 +137,7 @@ export default function NewHireView() {
 
       <div className="p-6 space-y-6">
         {/* Journey Timeline */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Your Journey</p>
           <div className="flex items-center overflow-x-auto pb-2">
             {PHASE_ORDER.slice(0, -1).map((phase, i) => {
@@ -146,15 +146,15 @@ export default function NewHireView() {
               return (
                 <div key={phase} className="flex items-center flex-shrink-0">
                   <div className="flex flex-col items-center gap-1.5">
-                    <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg transition-all ${isDone ? 'bg-hire-mid text-white' : isCurrent ? 'bg-hire-light border-2 border-hire-mid animate-pulse-ring' : 'bg-gray-100 text-gray-400'}`}>
+                    <div className={`w-11 h-11 rounded-full flex items-center justify-center text-lg transition-all ${isDone ? 'bg-brand-600 text-white' : isCurrent ? 'bg-brand-50 border-2 border-brand-600 animate-pulse-ring' : 'bg-gray-100 text-gray-400'}`}>
                       {isDone ? '✓' : PHASE_ICONS[phase]}
                     </div>
-                    <span className={`text-[10px] font-medium whitespace-nowrap ${isCurrent ? 'text-hire-dark' : isDone ? 'text-gray-500' : 'text-gray-300'}`}>
+                    <span className={`text-[10px] font-medium whitespace-nowrap ${isCurrent ? 'text-brand-700' : isDone ? 'text-gray-500' : 'text-gray-300'}`}>
                       {PHASE_LABELS[phase]}
                     </span>
                   </div>
                   {i < PHASE_ORDER.length - 2 && (
-                    <div className={`w-12 h-0.5 mx-1 flex-shrink-0 ${PHASE_ORDER.indexOf(phase) < phaseIndex ? 'bg-hire-mid' : 'bg-gray-200'}`} />
+                    <div className={`w-12 h-0.5 mx-1 flex-shrink-0 ${PHASE_ORDER.indexOf(phase) < phaseIndex ? 'bg-brand-600' : 'bg-gray-200'}`} />
                   )}
                 </div>
               );
@@ -166,9 +166,9 @@ export default function NewHireView() {
         <div>
           <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-3">Today's Tasks</p>
           {todaysTasks.length === 0 ? (
-            <div className="bg-hire-light border border-hire-mid/20 rounded-2xl p-6 text-center">
-              <CheckCircle2 className="w-10 h-10 text-hire-mid mx-auto mb-2" />
-              <p className="font-semibold text-hire-dark">You're all caught up!</p>
+            <div className="bg-brand-50 border border-brand-600/20 rounded-2xl p-6 text-center">
+              <CheckCircle2 className="w-10 h-10 text-brand-600 mx-auto mb-2" />
+              <p className="font-semibold text-brand-700">You're all caught up!</p>
               <p className="text-sm text-gray-500 mt-1">No pending tasks for today. Great work.</p>
             </div>
           ) : (
@@ -181,13 +181,13 @@ export default function NewHireView() {
         </div>
 
         {/* 30/60/90 Roadmap */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">My 30/60/90 Roadmap</p>
             {!roadmapGenerated && (
               <button
                 onClick={generateRoadmap}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium rounded-lg transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Generate My Personalized Plan
@@ -201,10 +201,10 @@ export default function NewHireView() {
               <p className="text-sm">Click the button to generate your AI-personalized roadmap</p>
             </div>
           ) : (
-            <div className="bg-compass-light border border-indigo-100 rounded-xl p-5">
+            <div className="bg-brand-50 border border-brand-100 rounded-xl p-5">
               <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
                 {roadmap}
-                {roadmapStreaming && <span className="inline-block w-1.5 h-4 bg-indigo-400 ml-0.5 animate-blink" />}
+                {roadmapStreaming && <span className="inline-block w-1.5 h-4 bg-brand-400 ml-0.5 animate-blink" />}
               </div>
             </div>
           )}
@@ -217,24 +217,24 @@ export default function NewHireView() {
             {teamMembers.map(member => {
               const hasConnected = connections.some(c => c.person === member.name);
               return (
-                <div key={member.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex-shrink-0 w-52">
+                <div key={member.id} className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-4 flex-shrink-0 w-52">
                   <div className="flex flex-col items-center text-center gap-2">
                     <Avatar initials={member.initials} color={member.avatarColor} size="lg" />
                     <div>
-                      <p className="text-sm font-semibold text-brand-navy">{member.name}</p>
+                      <p className="text-sm font-semibold text-gray-900">{member.name}</p>
                       <p className="text-xs text-gray-400">{member.role}</p>
                       <p className="text-xs text-gray-300">{member.yearsAtCompany} yrs at Acme</p>
                     </div>
                     <div className="bg-amber-50 text-amber-700 text-xs px-2 py-1 rounded-lg italic w-full">
                       "{member.funFact}"
                     </div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-50 text-gray-600 border border-gray-100">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-50 text-gray-600 border border-gray-200/70">
                       {member.expertise[0]}
                     </span>
                     <button
                       onClick={() => sayHi(member)}
                       disabled={hasConnected}
-                      className={`w-full text-xs py-1.5 rounded-lg font-medium transition-colors ${hasConnected ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-hire-light text-hire-dark hover:bg-hire-mid hover:text-white border border-hire-mid/30'}`}
+                      className={`w-full text-xs py-1.5 rounded-lg font-medium transition-colors ${hasConnected ? 'bg-brand-50 text-brand-700 border border-brand-200' : 'bg-brand-50 text-brand-700 hover:bg-brand-600 hover:text-white border border-brand-600/30'}`}
                     >
                       {hasConnected ? '✓ Connected' : 'Say hi 👋'}
                     </button>
@@ -246,7 +246,7 @@ export default function NewHireView() {
         </div>
 
         {/* Weekly Pulse */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">This Week's Pulse Check-In</p>
             {pulseHistory.length > 1 && (
@@ -260,7 +260,7 @@ export default function NewHireView() {
           {pulseSubmitted ? (
             <div className="text-center py-6">
               <div className="text-4xl mb-2">🎉</div>
-              <p className="font-semibold text-brand-navy">Thanks for checking in!</p>
+              <p className="font-semibold text-gray-900">Thanks for checking in!</p>
               <p className="text-sm text-gray-400 mt-1">Your responses help us support you better.</p>
               <div className="flex justify-center gap-6 mt-4">
                 <ScoreDisplay label="Connected" score={pulseScores.connected} />
@@ -276,7 +276,7 @@ export default function NewHireView() {
                 { key: 'supported', label: 'How supported do you feel by your manager?', low: 'On my own', high: 'Fully supported' },
               ].map(({ key, label, low, high }) => (
                 <div key={key}>
-                  <p className="text-sm font-medium text-brand-navy mb-2">{label}</p>
+                  <p className="text-sm font-medium text-gray-900 mb-2">{label}</p>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-400 w-16 text-right">{low}</span>
                     <div className="flex gap-1.5">
@@ -284,7 +284,7 @@ export default function NewHireView() {
                         <button
                           key={n}
                           onClick={() => setPulseScores(prev => ({ ...prev, [key]: n }))}
-                          className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${pulseScores[key] === n ? 'bg-hire-mid text-white scale-110' : 'bg-gray-100 text-gray-500 hover:bg-hire-light hover:text-hire-dark'}`}
+                          className={`w-7 h-7 rounded-lg text-xs font-medium transition-all ${pulseScores[key] === n ? 'bg-brand-600 text-white scale-110' : 'bg-gray-100 text-gray-500 hover:bg-brand-50 hover:text-brand-700'}`}
                         >
                           {n}
                         </button>
@@ -296,7 +296,7 @@ export default function NewHireView() {
               ))}
               <button
                 onClick={submitPulse}
-                className="w-full py-2.5 bg-hire-mid hover:bg-hire-dark text-white text-sm font-medium rounded-xl transition-colors"
+                className="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl transition-colors"
               >
                 Submit Check-In
               </button>
@@ -305,23 +305,23 @@ export default function NewHireView() {
         </div>
 
         {/* Wins Feed */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-gray-200/70 shadow-card p-5">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Your Wins 🏆</p>
           <div className="space-y-3">
             {wins.map((w, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-hire-light rounded-xl">
+              <div key={i} className="flex items-center gap-3 p-3 bg-brand-50 rounded-xl">
                 <span className="text-xl">{w.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-brand-navy">{w.label}</p>
+                  <p className="text-sm font-medium text-gray-900">{w.label}</p>
                   {w.date && <p className="text-xs text-gray-400">{w.date}</p>}
                 </div>
               </div>
             ))}
             {completedTasks.size > 0 && (
-              <div className="flex items-center gap-3 p-3 bg-hire-light rounded-xl">
+              <div className="flex items-center gap-3 p-3 bg-brand-50 rounded-xl">
                 <span className="text-xl">✅</span>
                 <div>
-                  <p className="text-sm font-medium text-brand-navy">{completedTasks.size} task{completedTasks.size > 1 ? 's' : ''} completed in this session</p>
+                  <p className="text-sm font-medium text-gray-900">{completedTasks.size} task{completedTasks.size > 1 ? 's' : ''} completed in this session</p>
                   <p className="text-xs text-gray-400">Nice work!</p>
                 </div>
               </div>
@@ -335,11 +335,11 @@ export default function NewHireView() {
 
 function TaskCard({ task, onComplete, completed }) {
   return (
-    <div className={`bg-white border rounded-2xl p-4 transition-all ${completed ? 'opacity-50 border-gray-100' : 'border-gray-100 hover:border-hire-mid/30 hover:shadow-sm'}`}>
+    <div className={`bg-white border rounded-2xl p-4 transition-all ${completed ? 'opacity-50 border-gray-200/70' : 'border-gray-200/70 hover:border-brand-300 hover:shadow-card'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <p className={`text-sm font-medium ${completed ? 'line-through text-gray-400' : 'text-brand-navy'}`}>{task.title}</p>
+            <p className={`text-sm font-medium ${completed ? 'line-through text-gray-400' : 'text-gray-900'}`}>{task.title}</p>
             {task.isMandatory && <span className="text-[10px] bg-red-50 text-red-600 border border-red-100 px-1.5 rounded">Required</span>}
           </div>
           <p className="text-xs text-gray-400 leading-relaxed mb-2">{task.description}</p>
@@ -355,12 +355,12 @@ function TaskCard({ task, onComplete, completed }) {
         {!completed && (
           <button
             onClick={onComplete}
-            className="flex-shrink-0 px-3 py-1.5 bg-hire-light hover:bg-hire-mid hover:text-white text-hire-dark text-xs font-medium rounded-lg transition-colors border border-hire-mid/20"
+            className="flex-shrink-0 px-3 py-1.5 bg-brand-50 hover:bg-brand-600 hover:text-white text-brand-700 text-xs font-medium rounded-lg transition-colors border border-brand-600/20"
           >
             Mark Done
           </button>
         )}
-        {completed && <CheckCircle2 className="w-5 h-5 text-hire-mid flex-shrink-0" />}
+        {completed && <CheckCircle2 className="w-5 h-5 text-brand-600 flex-shrink-0" />}
       </div>
     </div>
   );
@@ -369,7 +369,7 @@ function TaskCard({ task, onComplete, completed }) {
 function ScoreDisplay({ label, score }) {
   return (
     <div className="text-center">
-      <div className="text-2xl font-bold text-hire-dark">{score}</div>
+      <div className="text-2xl font-bold text-brand-700">{score}</div>
       <div className="text-xs text-gray-400">{label}</div>
     </div>
   );
