@@ -70,7 +70,7 @@ export default function Sidebar() {
             All data is simulated for portfolio purposes.
           </p>
           <p className="text-xs text-gray-500 leading-relaxed mt-2">
-            Built by <span className="font-semibold text-gray-700">Nexus Advisory Group</span>
+            Built by <span className="font-semibold text-gray-700">Shlok Mistry</span>
           </p>
           <a
             href="#"
